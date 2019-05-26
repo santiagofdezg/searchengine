@@ -71,10 +71,28 @@ class Search:
         self.__index = index_name
 
     def get_all_categories(self):
-        pass
+        # Create the request
+        s = S(using=self.__es, index=self.__index)
+        s.aggs.bucket('categories', 'terms', field='category')
+        response = s.execute()
+
+        # Get a sorted list
+        l = response.aggregations.categories.buckets._l_
+        categories = [cat['key'] for cat in l].sort()
+
+        return categories
 
     def get_all_sources(self):
-        pass
+        # Create the request
+        s = S(using=self.__es, index=self.__index)
+        s.aggs.bucket('source', 'terms', field='source')
+        response = s.execute()
+
+        # Get a sorted list
+        l = response.aggregations.sources.buckets._l_
+        sources = [source['key'] for source in l].sort()
+
+        return sources
 
     def search(self):
         pass
