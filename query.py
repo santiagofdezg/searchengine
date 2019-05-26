@@ -29,35 +29,37 @@ class Index:
     add and delete documents from that index, etc.
     """
     name = None
-    connection = None
+    __es = None
+    settings = None
 
     @staticmethod
     def create(connection, index_name, body=None):
         # If it's already created => return None
         try:
+            instance = Index()
+            instance.name = index_name
+            instance.__es = connection
             if body is None:
                 connection.indices.create(index=index_name)
             else:
                 connection.indices.create(index=index_name, body=body)
-            instance = Index()
-            instance.name = index_name
-            instance.connection = connection
+                instance.settings = body
             return instance
 
         except TransportError:
             return None
 
     def delete(self):
-        self.connection.indices.delete(self.name)
+        self.__es.indices.delete(self.name)
 
     def index_doc(self, body):
-        pass
+        self.__es.index(index=self.name, body=body)
 
     def get_doc(self, id):
-        pass
+        return self.__es.get(index=self.name, id=id)
 
     def delete_doc(self, id):
-        pass
+        self.__es.delete(index=self.name, id=id)
 
 
 class Query:
