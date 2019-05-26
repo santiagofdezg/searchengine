@@ -9,7 +9,7 @@ License: MIT
 """
 
 from elasticsearch import Elasticsearch, TransportError
-from elasticsearch_dsl import Search as S, A
+from elasticsearch_dsl import Search as S, A, Q
 
 
 class Connection:
@@ -96,9 +96,27 @@ class Search:
 
         return sources
 
-    def search_news(self, category, source, time_interval, max_articles):
+    def search_news(self, text, category, source, time_interval, max_articles):
+        intervals = {
+            'today': 'now/d', 'week': 'now/w', 'month': 'now/M',
+            '3months': 'now-2M/M', 'year': 'now/y'
+        }
+        s = S(using=self.__es, index=self.__index)
+        if category != "All":
+            s = s.query("bool", must=Q("match", category=category))
+        s = s.query("bool", should=Q("multi_match", query=text,
+                                     fields=['title', 'article']))
+        if source != "All":
+            s = s.filter("term", source=source)
+        s = s.filter({"range": {"date": {"gte": intervals[time_interval],
+                                        "lte": "now"}}})
+        s = s[0:max_articles]
+        response = s.execute()
+
+        #+ FIX!! (but it looks that the response already exclude the
+        # documents with score==0)
         # Return only documents with score > 0
-        pass
+        return response.hits.hits
 
 
 if __name__ == '__main__':
