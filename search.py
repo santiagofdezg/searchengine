@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This module contains the class which makes the queries to Elasticsearch
+This module contains the class which makes search requests to Elasticsearch
 
 Author: Santiago Fernández González
 
@@ -9,7 +9,7 @@ License: MIT
 """
 
 from elasticsearch import Elasticsearch, TransportError
-from elasticsearch_dsl import Search, A
+from elasticsearch_dsl import Search as S, A
 
 
 class Connection:
@@ -62,11 +62,13 @@ class Index:
         self.__es.delete(index=self.name, id=id)
 
 
-class Query:
-    connection = None
+class Search:
+    __es = None
+    __index = None
 
-    def __init__(self, connection):
-        pass
+    def __init__(self, connection, index_name):
+        self.__es = connection
+        self.__index = index_name
 
     def get_all_categories(self):
         pass
