@@ -77,22 +77,35 @@ class Search:
         response = s.execute()
 
         # Get a sorted list
-        l = response.aggregations.categories.buckets._l_
-        categories = [cat['key'] for cat in l].sort()
+        l = response.aggregations.categories.buckets
+        categories = [cat['key'] for cat in l]
+        categories.sort()
 
         return categories
 
     def get_all_sources(self):
         # Create the request
         s = S(using=self.__es, index=self.__index)
-        s.aggs.bucket('source', 'terms', field='source')
+        s.aggs.bucket('sources', 'terms', field='source')
         response = s.execute()
 
         # Get a sorted list
-        l = response.aggregations.sources.buckets._l_
-        sources = [source['key'] for source in l].sort()
+        l = response.aggregations.sources.buckets
+        sources = [source['key'] for source in l]
+        sources.sort()
 
         return sources
 
-    def search(self):
+    def search_news(self, category, source, time_interval, max_articles):
+        # Return only documents with score > 0
         pass
+
+
+if __name__ == '__main__':
+
+    es = Connection.get_connection()
+    s = Search(es, 'news')
+    categories = s.get_all_categories()
+    sources = s.get_all_sources()
+    print(categories)
+    print(sources)
