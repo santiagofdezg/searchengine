@@ -96,7 +96,8 @@ class Search:
 
         return sources
 
-    def search_news(self, text, category, source, time_interval, max_articles):
+    def search_news(self, text, category, source, time_interval,
+                    max_articles):
         intervals = {
             'today': 'now/d', 'week': 'now/w', 'month': 'now/M',
             '3months': 'now-2M/M', 'year': 'now/y'
