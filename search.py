@@ -9,7 +9,7 @@ License: MIT
 """
 
 from elasticsearch import Elasticsearch, TransportError
-from elasticsearch_dsl import Search as S, A, Q
+from elasticsearch_dsl import Search as S, A, Q, Document
 
 
 class Connection:
@@ -117,6 +117,9 @@ class Search:
         # documents with score==0)
         # Return only documents with score > 0
         return response.hits
+
+    def search_by_id(self, id):
+        return Document.get(id, self.__es, self.__index)
 
 
 if __name__ == '__main__':
