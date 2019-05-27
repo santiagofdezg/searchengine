@@ -19,7 +19,9 @@ class Connection:
 
     @staticmethod
     def get_connection():
-        # Return a Elasticsearch instance
+        """
+        Return a Elasticsearch instance
+        """
         return Elasticsearch([{'host': 'localhost', 'port': 9200}])
 
 
@@ -34,7 +36,10 @@ class Index:
 
     @staticmethod
     def create(connection, index_name, body=None):
-        # If it's already created => return None
+        """
+        Create a new index and return an instance to manage it. If it is
+        already created, return None
+        """
         try:
             instance = Index()
             instance.name = index_name
@@ -47,6 +52,7 @@ class Index:
             return instance
 
         except TransportError:
+            # There is already an index with that name
             return None
 
     def delete(self):
@@ -63,6 +69,9 @@ class Index:
 
 
 class Search:
+    """
+    Class to send search requests to Elasticsearch
+    """
     __es = None
     __index = None
 
@@ -104,17 +113,24 @@ class Search:
         }
         s = S(using=self.__es, index=self.__index)
         if category != "All":
+            # Search in a specific category
             s = s.query("bool", must=Q("match", category=category))
+
+        # Search in the title and in the body of the article
         s = s.query("bool", should=Q("multi_match", query=text,
                                      fields=['title', 'article']))
         if source != "All":
+            # Only articles of a specific source
             s = s.filter("term", source=source)
+
+        # Only articles in this range of time
         s = s.filter({"range": {"date": {"gte": intervals[time_interval],
-                                        "lte": "now"}}})
+                                         "lte": "now"}}})
+        # Limit the number of results
         s = s[0:int(max_articles)]
         response = s.execute()
 
-        #+ FIX!! (but it looks that the response already exclude the
+        # + FIX THIS!! (but it looks that the response already exclude the
         # documents with score==0)
         # Return only documents with score > 0
         return response.hits
@@ -124,7 +140,6 @@ class Search:
 
 
 if __name__ == '__main__':
-
     es = Connection.get_connection()
     s = Search(es, 'news')
     categories = s.get_all_categories()
