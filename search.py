@@ -116,9 +116,10 @@ class Search:
             # Search in a specific category
             s = s.query("bool", must=Q("match", category=category))
 
-        # Search in the title and in the body of the article
+        # Search in the title, subtitle and in the body of the article
         s = s.query("bool", should=Q("multi_match", query=text,
-                                     fields=['title', 'article']))
+                                     fields=[
+                                         'title', 'subtitle', 'article']))
         if source != "All":
             # Only articles of a specific source
             s = s.filter("term", source=source)
