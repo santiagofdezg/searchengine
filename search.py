@@ -110,13 +110,13 @@ class Search:
             s = s.filter("term", source=source)
         s = s.filter({"range": {"date": {"gte": intervals[time_interval],
                                         "lte": "now"}}})
-        s = s[0:max_articles]
+        s = s[0:int(max_articles)]
         response = s.execute()
 
         #+ FIX!! (but it looks that the response already exclude the
         # documents with score==0)
         # Return only documents with score > 0
-        return response.hits.hits
+        return response.hits
 
 
 if __name__ == '__main__':
