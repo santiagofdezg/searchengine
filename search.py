@@ -30,30 +30,22 @@ class Index:
     Manage basic operations over an index, such as create and remove an index,
     add and delete documents from that index, etc.
     """
-    name = None
-    __es = None
-    settings = None
 
-    @staticmethod
-    def create(connection, index_name, body=None):
+    def __init__(self, connection, index_name, body=None):
         """
-        Create a new index and return an instance to manage it. If it is
-        already created, return None
+        Create an index.
         """
+        self.name = index_name
+        self.__es = connection
+        self.settings = body
         try:
-            instance = Index()
-            instance.name = index_name
-            instance.__es = connection
             if body is None:
                 connection.indices.create(index=index_name)
             else:
                 connection.indices.create(index=index_name, body=body)
-                instance.settings = body
-            return instance
-
         except TransportError:
             # There is already an index with that name
-            return None
+            pass
 
     def delete(self):
         self.__es.indices.delete(self.name)
@@ -70,7 +62,7 @@ class Index:
 
 class Search:
     """
-    Class to send search requests to Elasticsearch
+    Class to send search requests to Elasticsearch.
     """
     __es = None
     __index = None
@@ -143,7 +135,4 @@ class Search:
 if __name__ == '__main__':
     es = Connection.get_connection()
     s = Search(es, 'news')
-    categories = s.get_all_categories()
-    sources = s.get_all_sources()
-    print(categories)
-    print(sources)
+
