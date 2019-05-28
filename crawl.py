@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 from datetime import datetime
 
+from .search import Index, Connection
+
 class BBC:
     url = "https://www.bbc.com"
     main_categories = {
@@ -86,44 +88,26 @@ class BBC:
         text = ''
         for p in p_list:
             # TODO: Fix the way to crawl the text of the article. It works
-            # wrong when there are <a> links within the text
+            #  wrong when there are <a> links within the text
             if p.contents[0].__class__ == NavigableString:
                 text = text + "\n\n" + p.contents[0]
         return text
 
 
 if __name__ == '__main__':
+    """
+    Script to index press articles
+    """
 
-    result = requests.get("https://www.bbc.com/news/technology")
+    es = Connection.get_connection()
+    i = Index(es, 'news')
 
-    print(result.status_code) # If 200 => OK
-
-    # We can also check the HTTP header of the website to
-    # verify that we have indeed accessed the correct page:
-    print(result.headers)
-
-    src = result.content
-    soup = BeautifulSoup(src, 'lxml')
-
-    # Obtain all the articles
-
-    print(soup.find_all("div", class_="gs-c-promo", limit=10))
-    # Equivalent to:
-    print(soup("div", class_="gs-c-promo", limit=10))
-
-    url = "https://www.bbc.com"
-    all = soup("div", class_="gs-c-promo", limit=4)
-    # BUG: There is some problem and the articles are repeated
-    for e in all:
-        title = e.find("h3", class_="gs-c-promo-heading__title").contents[0]
-        print(title)
-        link = url + e.find("a", class_="gs-c-promo-heading")['href']
-        print(link)
-        subtitle = e.find("p", class_="gs-c-promo-summary").contents[0]
-        print(subtitle)
-        category = e.find("a", class_="gs-c-section-link").span.contents[0]
-        print(category)
-
-
+    # Scrap the articles from the BBC
     articles = BBC.get_articles()
+
+    for a in articles:
+        i.index_doc(a)
+
+    # TODO: improve the indexing of documents to avoid adding repeated
+    #  documents
 
