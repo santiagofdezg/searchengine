@@ -154,7 +154,7 @@ if __name__ == '__main__':
                     "analyzer": "news_analyzer",
                     "fields": {
                         "raw": {
-                            "type": "text"
+                            "type": "keyword"
                         }
                     }
                 },
@@ -163,7 +163,7 @@ if __name__ == '__main__':
                     "analyzer": "news_analyzer",
                     "fields": {
                         "raw": {
-                            "type": "text"
+                            "type": "keyword"
                         }
                     }
                 },
@@ -172,7 +172,7 @@ if __name__ == '__main__':
                     "analyzer": "news_analyzer",
                     "fields": {
                         "raw": {
-                            "type": "text"
+                            "type": "keyword"
                         }
                     }
                 },
