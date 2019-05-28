@@ -64,8 +64,6 @@ class Search:
     """
     Class to send search requests to Elasticsearch.
     """
-    __es = None
-    __index = None
 
     def __init__(self, connection, index_name):
         self.__es = connection
@@ -133,6 +131,76 @@ class Search:
 
 
 if __name__ == '__main__':
+    """
+    Script to create the index 'news'
+    """
     es = Connection.get_connection()
-    s = Search(es, 'news')
 
+    index_settings = {
+        "settings": {
+            "number_of_shards": 1,
+            "analysis": {
+                "analyzer": {
+                    "news_analyzer": {
+                        "type": "standard",
+                        "stopwords": "_english_"
+                    }
+                }
+            }
+        },
+        "mappings": {
+            "properties": {
+                "title": {
+                    # It's multi-field: a text field for full-text search, and as
+                    # a keyword field (named "raw") for sorting or aggregations
+                    "type": "text",
+                    "analyzer": "news_analyzer",
+                    "fields": {
+                        "raw": {
+                            "type": "text"
+                        }
+                    }
+                },
+                "subtitle": {
+                    "type": "text",
+                    "analyzer": "news_analyzer",
+                    "fields": {
+                        "raw": {
+                            "type": "text"
+                        }
+                    }
+                },
+                "article": {
+                    "type": "text",
+                    "analyzer": "news_analyzer",
+                    "fields": {
+                        "raw": {
+                            "type": "text"
+                        }
+                    }
+                },
+                "author": {
+                    "type": "text",
+                    "analyzer": "standard"
+                },
+                "category": {
+                    "type": "keyword"
+                },
+                "date": {
+                    "type": "date",
+                    "format": "dd-MM-yyyy||epoch_millis"
+                },
+                "source": {
+                    "type": "keyword"
+                }
+            }
+        }
+    }
+
+    # Create the index
+    try:
+        es.indices.create('news', body=index_settings)
+    except TransportError:
+        # If it is already created
+        es.indices.delete('news')
+        es.indices.create('news', body=index_settings)
