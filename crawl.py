@@ -13,8 +13,10 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 from datetime import datetime
+import time
 
 from .search import Index, Connection
+
 
 class BBC:
     url = "https://www.bbc.com"
@@ -103,7 +105,10 @@ if __name__ == '__main__':
     i = Index(es, 'news')
 
     # Scrap the articles from the BBC
+    start = time.time()
     articles = BBC.get_articles()
+    end = time.time()
+    print(end - start)
 
     for a in articles:
         i.index_doc(a)
