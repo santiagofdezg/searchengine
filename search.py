@@ -126,6 +126,8 @@ class Search:
         # Return only documents with score > 0
         return response.hits
 
+    def search_by_id(self, id):
+        return Document.get(id, self.__es, self.__index)
 
 if __name__ == '__main__':
     """
