@@ -107,6 +107,7 @@ if __name__ == '__main__':
     # Scrap the articles from the BBC
     start = time.time()
     articles = BBC.get_articles()
+    # It takes an average of one second per article
     end = time.time()
     print(end - start)
 
