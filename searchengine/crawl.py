@@ -15,7 +15,12 @@ from bs4.element import NavigableString
 from datetime import datetime
 import time
 
-from .search import Index, Connection
+# Solves relative imports depending on whether it runs as script or module
+if __package__ is None or __package__ == '':
+    # noinspection PyUnresolvedReferences
+    import search  # Sets current directory visibility
+else:
+    from . import search  # Sets current package visibility
 
 
 class BBC:
@@ -101,8 +106,8 @@ if __name__ == '__main__':
     Script to index press articles
     """
 
-    es = Connection.get_connection()
-    i = Index(es, 'news')
+    es = search.Connection.get_connection()
+    i = search.Index(es, 'news')
 
     # Scrap the articles from the BBC
     start = time.time()
