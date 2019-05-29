@@ -51,10 +51,11 @@ class BBC:
                         link = BBC.url + article.find("a", class_="gs-c-promo-heading")['href']
                         known_data['category'] = article.find("a", class_="gs-c-section-link").span.contents[0]
                         known_data['title'] = article.find("h3", class_="gs-c-promo-heading__title").contents[0]
-                        known_data['subtitle'] = article.find("p", class_="gs-c-promo-summary").contents[0]
-                        known_data['source'] = "BBC"
-                        data = BBC._article_data(link, known_data)
-                        article_list.append(data)
+                        if not BBC._exists(article_list, known_data['title']):
+                            known_data['subtitle'] = article.find("p", class_="gs-c-promo-summary").contents[0]
+                            known_data['source'] = "BBC"
+                            data = BBC._article_data(link, known_data)
+                            article_list.append(data)
                     except:
                         errors += 1
 
@@ -99,6 +100,15 @@ class BBC:
             if p.contents[0].__class__ == NavigableString:
                 text = text + "\n\n" + p.contents[0]
         return text
+
+    @staticmethod
+    def _exists(articles, new_title):
+        exists = False
+        for item in articles:
+            if item['title'] == new_title:
+                exists = True
+                break
+        return exists
 
 
 if __name__ == '__main__':
