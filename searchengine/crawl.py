@@ -17,7 +17,6 @@ import time
 
 # Solves relative imports depending on whether it runs as script or module
 if __package__ is None or __package__ == '':
-    # noinspection PyUnresolvedReferences
     import search  # Sets current directory visibility
 else:
     from . import search  # Sets current package visibility
@@ -36,9 +35,7 @@ class BBC:
     @staticmethod
     def get_articles():
         article_list = []
-        # ++++
         errors = 0
-        # ++++
         for c in BBC.main_categories.values():
             page = requests.get(c)
             if page.status_code == 200:
@@ -103,6 +100,9 @@ class BBC:
 
     @staticmethod
     def _exists(articles, new_title):
+        """
+        Check if the new article already exists in the list
+        """
         exists = False
         for item in articles:
             if item['title'] == new_title:

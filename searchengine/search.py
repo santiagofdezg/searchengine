@@ -50,6 +50,8 @@ class Index:
     def delete(self):
         self.__es.indices.delete(self.name)
 
+    # METHODS TO WORK WITH DOCUMENTS
+
     def index_doc(self, body):
         self.__es.index(index=self.name, body=body)
 
@@ -70,6 +72,9 @@ class Search:
         self.__index = index_name
 
     def get_all_categories(self):
+        """
+        Obtain all the available categories in the index
+        """
         # Create the request
         s = S(using=self.__es, index=self.__index)
         s.aggs.bucket('categories', 'terms', field='category')
@@ -83,6 +88,10 @@ class Search:
         return categories
 
     def get_all_sources(self):
+        """
+        Obtain all the available sources in the index
+        """
+
         # Create the request
         s = S(using=self.__es, index=self.__index)
         s.aggs.bucket('sources', 'terms', field='source')
@@ -97,6 +106,10 @@ class Search:
 
     def search_news(self, text, category, source, time_interval,
                     max_articles):
+        """
+        Send a search request to Elasticsearch. It is possible to filter the
+        search by the category, the source and the publication date.
+        """
         intervals = {
             'today': 'now/d', 'week': 'now/w', 'month': 'now/M',
             '3months': 'now-2M/M', 'year': 'now/y'
