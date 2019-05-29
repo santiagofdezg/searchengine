@@ -113,7 +113,7 @@ class BBC:
 
 if __name__ == '__main__':
     """
-    Script to index press articles
+    Script to scrap and index press articles
     """
 
     print("# Connect to Elasticsearch")
