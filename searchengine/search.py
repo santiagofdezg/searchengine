@@ -198,7 +198,10 @@ if __name__ == '__main__':
     # Create the index
     try:
         es.indices.create('news', body=index_settings)
+        print("# Index created")
     except TransportError:
         # If it is already created
         es.indices.delete('news')
+        print("# Old index deleted")
         es.indices.create('news', body=index_settings)
+        print("# New index created")

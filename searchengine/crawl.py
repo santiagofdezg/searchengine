@@ -116,18 +116,23 @@ if __name__ == '__main__':
     Script to index press articles
     """
 
+    print("# Connect to Elasticsearch")
     es = search.Connection.get_connection()
     i = search.Index(es, 'news')
 
     # Scrap the articles from the BBC
+    print("# Scrap the articles")
     start = time.time()
     articles = BBC.get_articles()
     # It takes an average of one second per article
     end = time.time()
-    print(end - start)
+    print("# Execution time: {0:.2f} s".format(end - start))
+    print("# Number of articles: ", len(articles))
 
+    print("# Index the articles")
     for a in articles:
         i.index_doc(a)
+    print("# Finished")
 
     # TODO: improve the indexing of documents to avoid adding repeated
     #  documents
