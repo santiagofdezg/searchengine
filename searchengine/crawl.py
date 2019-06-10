@@ -83,7 +83,7 @@ class BBC:
     def _find_date(article_body):
         date = article_body.find("div", class_="date")['data-datetime']
         # Modify the format of the date
-        mod_date = datetime.strptime(date, '%d %b %Y').strftime("%d-%m-%Y")
+        mod_date = datetime.strptime(date, '%d %B %Y').strftime("%d-%m-%Y")
         return mod_date
 
     @staticmethod
